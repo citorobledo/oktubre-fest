@@ -1,0 +1,68 @@
+import cerveza.*
+import persona.*
+import carpa.*
+test "test-oktubre.fest" {
+	
+	var c1 = new CervezaRubia(cantLupulo=10, origen="Alemania")
+	var c2 = new CervezaNegra(cantLupulo=6, origen="Alemania")
+	var c3 = new CervezaRoja(cantLupulo=3, origen="Argentina")
+	var j1=new Jarra(capacidad=1, cervezaEnJarra=c1)
+	var j2=new Jarra(capacidad=1, cervezaEnJarra=c2)
+	var j3=new Jarra(capacidad=1, cervezaEnJarra=c3)
+	const p1 = new Belga( peso = 89, nivelAguante = 20, marcaPreferida ="Corona")
+	const p2 = new Checo( peso = 110, nivelAguante = 30, marcaPreferida ="Guiness")
+	const p3 = new Aleman( peso = 76, nivelAguante = 4, marcaPreferida ="Guiness")
+	const carpa1 = new Carpas(limitePersonas =50, tieneMusicaTrad = true, marcaCerveza = "Corona",  estiloCerveza = "CervezaRubia" )
+	const carpa2 = new Carpas(limitePersonas =20, tieneMusicaTrad = true, marcaCerveza = "Guiness",  estiloCerveza = "CervezaNegra" )
+	
+	p1.comprarJarra(j1)
+	p2.comprarJarra(j1)
+	p2.comprarJarra(j2)
+	p2.comprarJarra(j3)
+	assert.that(p1.jarrasCompradas().size() == 1)
+	assert.that(p1.leGusta(c1) )
+	assert.that(not p1.estaEbria() )
+	
+	assert.throwsException{
+	carpa2.ingresarACarpa(p1)}
+	
+	carpa1.ingresarACarpa(p1)
+	carpa1.servirJarra(p1, 1)
+	carpa2.ingresarACarpa(p3)
+	carpa2.servirJarra(p3,1)
+	carpa2.servirJarra(p3,1)
+	carpa2.servirJarra(p3,1)
+	//1
+	assert.that(j3.contAlcohol() == 0.075 )
+	//2
+	
+	assert.that( p1.alcholINgerido() == 0.1 )
+	assert.that( p2.alcholINgerido() == 0.175 )
+	//3
+	assert.that( not p2.estaEbria()  )
+	//4
+	assert.that( p2.leGusta(c1) ) 
+	//5 
+	assert.that( not p2.quiereEntrar(carpa1) ) 
+	assert.that(  p2.quiereEntrar(carpa2) ) 
+	//6
+	assert.that(carpa1.permitirIngreso(p2 ) )
+	//7
+	assert.that(not carpa1.puedeEntrar(p2 ) )
+	//8
+	carpa2.ingresarACarpa(p2 )
+	assert.that(carpa2.cantPersonas() == 2 )
+	
+	//9
+	carpa2.servirJarra(p2, 1 ) 
+	assert.that(p2.jarrasCompradas().size() == 4 )
+	//10
+	
+	assert.that(carpa2.ebriosEmpedernidos() == 1)
+	assert.that(carpa1.ebriosEmpedernidos() == 0 )
+	//11
+	
+	assert.that(not p1.esPatriota() )
+	assert.that(not p2.esPatriota() )
+	assert.that(not p3.esPatriota() )
+}
